@@ -8,6 +8,7 @@ Strategy:
   - Benchmark: BTC buy-and-hold
 """
 
+import warnings
 import numpy as np
 import pandas as pd
 import yfinance as yf
@@ -19,9 +20,9 @@ from skill.signals.regime import classify
 # Eligible tokens with reliable yfinance coverage
 UNIVERSE = {
     "BTC": "BTC-USD", "ETH": "ETH-USD", "ADA": "ADA-USD",
-    "LINK": "LINK-USD", "DOT": "DOT-USD", "UNI": "UNI-USD",
+    "LINK": "LINK-USD", "DOT": "DOT-USD",
     "AAVE": "AAVE-USD", "ATOM": "ATOM-USD", "LTC": "LTC-USD",
-    "SNX": "SNX-USD", "SUSHI": "SUSHI-USD", "COMP": "COMP-USD",
+    "SNX": "SNX-USD", "SUSHI": "SUSHI-USD",
     "BAT": "BAT-USD", "ZIL": "ZIL-USD", "KAVA": "KAVA-USD",
     "AXS": "AXS-USD", "1INCH": "1INCH-USD", "YFI": "YFI-USD",
 }
@@ -52,7 +53,9 @@ def run_backtest(top_n: int = 3, initial_capital: float = 10_000) -> dict:
 
     # --- 2. Price data ---
     tickers = list(UNIVERSE.values())
-    raw = yf.download(tickers, start=start, end=end, auto_adjust=True, progress=False)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        raw = yf.download(tickers, start=start, end=end, auto_adjust=True, progress=False)
     prices = raw["Close"] if "Close" in raw else raw.xs("Close", axis=1, level=0)
     prices.index = pd.to_datetime(prices.index).date
     prices.columns = [c.replace("-USD", "") for c in prices.columns]
@@ -63,7 +66,7 @@ def run_backtest(top_n: int = 3, initial_capital: float = 10_000) -> dict:
     prices = prices.rename(columns=sym_map)
 
     # --- 3. Rolling 7-day momentum ---
-    momentum = prices.pct_change(7)
+    momentum = prices.pct_change(7, fill_method=None)
 
     # --- 4. Daily simulation ---
     common_dates = sorted(set(fg_df["date"]) & set(prices.index))
