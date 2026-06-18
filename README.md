@@ -55,7 +55,7 @@ Every hour:
                  │
   ┌──────────────▼──────────────────────┐
   │  5-Layer Risk Gate                  │
-  │  L1: Regime gate (block RISK_OFF +   │
+  │  L1: Regime gate (block RISK_OFF +  │
   │      NEUTRAL)                       │
   │  L2: ML confidence gate (< 0.5)     │
   │  L3: Momentum quality gate (< 0.3)  │
