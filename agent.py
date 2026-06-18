@@ -36,6 +36,10 @@ SL_PCT         = -0.08   # Stop loss: exit if down >8%
 TP_PCT         =  0.15   # Take profit: exit if up >15%
 MAX_HOLD_HOURS =  24     # Force exit after 24 hours
 
+# ── Competition compliance ─────────────────────────────────────────────────────
+COMPLIANCE_HOUR     = 21    # UTC hour — fire compliance trade if no trade yet today
+COMPLIANCE_SIZE_PCT = 0.02  # 2% of portfolio — minimum trade for daily qualification
+
 # ── Agent state ────────────────────────────────────────────────────────────────
 state = {
     "start_value":        None,
@@ -45,6 +49,7 @@ state = {
     "halted":             False,
     "scan_count":         0,
     "consecutive_losses": 0,
+    "last_trade_date":    None,  # tracks last day a BUY was executed
     "positions":          {},  # symbol → {amount_tokens, entry_price, amount_usd, entry_time}
     "trades":             [],
 }
@@ -109,6 +114,65 @@ def _check_exits(twak: TWAKClient, signal):
         })
         del state["positions"][symbol]
         log.info(f"Sell result: {result}")
+
+
+def _needs_compliance_trade() -> bool:
+    """True if no trade yet today and it's past COMPLIANCE_HOUR UTC."""
+    today = str(datetime.now(timezone.utc).date())
+    hour  = datetime.now(timezone.utc).hour
+    return hour >= COMPLIANCE_HOUR and state["last_trade_date"] != today
+
+
+def _do_compliance_trade(twak: TWAKClient, signal, portfolio_usd: float):
+    """Minimal daily trade to meet competition 1-trade/day requirement."""
+    if state["daily_stopped"] or state["halted"]:
+        log.info("[COMPLIANCE] Skipped — halt active")
+        return
+    if not signal.top_long_candidates:
+        log.info("[COMPLIANCE] Skipped — no token candidates")
+        return
+
+    symbol = signal.top_long_candidates[0]["symbol"]
+    if symbol in state["positions"]:
+        log.info(f"[COMPLIANCE] Already holding {symbol}, qualification satisfied")
+        state["last_trade_date"] = str(datetime.now(timezone.utc).date())
+        return
+
+    position_usd = portfolio_usd * COMPLIANCE_SIZE_PCT
+    log.info(f"[COMPLIANCE] No trade today — forcing qualification buy: {symbol} ${position_usd:.2f}")
+
+    entry_price = twak.get_price(symbol)
+    result = twak.swap(
+        amount=position_usd,
+        from_token="USDT",
+        to_token=symbol,
+        chain="bsc",
+        slippage=1.0,
+    )
+
+    today = str(datetime.now(timezone.utc).date())
+    state["last_trade_date"] = today
+
+    if entry_price > 0:
+        state["positions"][symbol] = {
+            "amount_tokens": position_usd / entry_price,
+            "entry_price":   entry_price,
+            "amount_usd":    position_usd,
+            "entry_time":    datetime.now(timezone.utc).isoformat(),
+        }
+
+    state["trades"].append({
+        "time":        datetime.now(timezone.utc).isoformat(),
+        "action":      "BUY",
+        "scan":        state["scan_count"],
+        "symbol":      symbol,
+        "amount_usd":  position_usd,
+        "entry_price": entry_price,
+        "regime":      signal.regime["label"],
+        "compliance":  True,
+        "result":      result,
+    })
+    log.info(f"[COMPLIANCE] Result: {result}")
 
 
 def _risk_gate(signal, portfolio_usd: float) -> tuple[bool, str]:
@@ -198,6 +262,8 @@ def run_scan(twak: TWAKClient):
     log.info(f"Risk gate: {reason}")
 
     if not ok:
+        if _needs_compliance_trade():
+            _do_compliance_trade(twak, signal, portfolio_usd)
         _save_state()
         return
 
@@ -246,6 +312,7 @@ def run_scan(twak: TWAKClient):
             "entry_time":    datetime.now(timezone.utc).isoformat(),
         }
 
+    state["last_trade_date"] = str(datetime.now(timezone.utc).date())
     state["trades"].append({
         "time":          datetime.now(timezone.utc).isoformat(),
         "action":        "BUY",
