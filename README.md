@@ -15,7 +15,7 @@ Powered by CoinMarketCap AI Agent Hub × Trust Wallet Agent Kit × BNB Chain
 | **Execution** | Trust Wallet Agent Kit (local signing, non-custodial, autonomous) |
 | **Exit Logic** | Stop Loss −8% / Take Profit +15% / Regime exit / 24h max hold |
 | **Risk** | 5-layer risk gate + drawdown ladder (position scales down after consecutive losses) |
-| **Backtest** | −2.27% vs BTC −15.14% over 29 days (May–June 2026 bear market) |
+| **Backtest** | −2.27% vs BTC −14.53% over 29 days (May–June 2026 bear market) |
 | **Design principle** | Rule engine is the foundation — AI calibrates and reviews, never controls alone |
 
 ---
@@ -55,7 +55,8 @@ Every hour:
                  │
   ┌──────────────▼──────────────────────┐
   │  5-Layer Risk Gate                  │
-  │  L1: Regime gate (block RISK_OFF)   │
+  │  L1: Regime gate (block RISK_OFF +   │
+  │      NEUTRAL)                       │
   │  L2: ML confidence gate (< 0.5)     │
   │  L3: Momentum quality gate (< 0.3)  │
   │  L4: Daily loss gate (> 3%)         │
@@ -167,13 +168,13 @@ effective_size = regime.base_size × ml_confidence_multiplier × drawdown_scale
 
 ---
 
-## Backtest Results (29 days, May 17 – June 15 2026)
+## Backtest Results (29 days, May 19 – June 17 2026)
 
 | Metric | Value |
 |---|---|
 | Strategy return | −2.27% |
-| BTC buy & hold | −15.14% |
-| Outperformance | +12.87% |
+| BTC buy & hold | −14.53% |
+| Outperformance | +12.26% |
 | Sharpe ratio | −0.868 |
 | Max drawdown | −7.76% |
 | Win rate | 13.8% |
@@ -212,8 +213,8 @@ Walk-forward results showed near-random AUC (0.50) for next-day direction predic
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/Amanda1005/bnb-regime-agent.git
-cd bnb-regime-agent
+git clone https://github.com/Amanda1005/Aura.git
+cd Aura
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 
@@ -272,6 +273,7 @@ ml/
   predictor.py        Live confidence inference
 backtest/
   backtest.py         29-day backtest (CMC F&G + yfinance)
+demo.sh               One-command demo (signal + agent scan + backtest)
 run_skill.py          Test current signal output
 run_backtest.py       Reproduce backtest results
 ```
