@@ -1,0 +1,8 @@
+.env
+venv/
+__pycache__/
+*.pyc
+*.pkl
+agent_state.json
+.DS_Store
+.claude/

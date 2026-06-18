@@ -1,0 +1,101 @@
+{
+  "walk_forward": {
+    "folds": [
+      {
+        "period_start": "2025-11-29",
+        "period_end": "2025-12-28",
+        "accuracy": 0.4333,
+        "roc_auc": 0.3956,
+        "n_test": 30
+      },
+      {
+        "period_start": "2025-12-29",
+        "period_end": "2026-01-27",
+        "accuracy": 0.6333,
+        "roc_auc": 0.6562,
+        "n_test": 30
+      },
+      {
+        "period_start": "2026-01-28",
+        "period_end": "2026-02-26",
+        "accuracy": 0.3667,
+        "roc_auc": 0.2011,
+        "n_test": 30
+      },
+      {
+        "period_start": "2026-02-27",
+        "period_end": "2026-03-28",
+        "accuracy": 0.6333,
+        "roc_auc": 0.5759,
+        "n_test": 30
+      },
+      {
+        "period_start": "2026-03-29",
+        "period_end": "2026-04-27",
+        "accuracy": 0.5667,
+        "roc_auc": 0.5742,
+        "n_test": 30
+      },
+      {
+        "period_start": "2026-04-28",
+        "period_end": "2026-05-27",
+        "accuracy": 0.6,
+        "roc_auc": 0.6,
+        "n_test": 30
+      }
+    ],
+    "mean_accuracy": 0.5389,
+    "mean_roc_auc": 0.5005
+  },
+  "shap_importance": [
+    {
+      "feature": "btc_ret_7d",
+      "importance": 0.2724
+    },
+    {
+      "feature": "fg_ma_14d",
+      "importance": 0.264
+    },
+    {
+      "feature": "fg_change_7d",
+      "importance": 0.2638
+    },
+    {
+      "feature": "btc_vol_7d",
+      "importance": 0.2425
+    },
+    {
+      "feature": "fg",
+      "importance": 0.2421
+    },
+    {
+      "feature": "btc_ret_1d",
+      "importance": 0.2405
+    },
+    {
+      "feature": "fg_change_1d",
+      "importance": 0.1902
+    },
+    {
+      "feature": "day_of_week",
+      "importance": 0.1898
+    },
+    {
+      "feature": "fg_ma_7d",
+      "importance": 0.1552
+    },
+    {
+      "feature": "fg_above_ma7",
+      "importance": 0.0274
+    },
+    {
+      "feature": "regime_int",
+      "importance": 0.0166
+    }
+  ],
+  "data_period": {
+    "start": "2025-05-31",
+    "end": "2026-06-16",
+    "n_days": 381
+  }
+}
