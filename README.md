@@ -1,7 +1,13 @@
+<p align="center">
+  <img src="Aura.png" alt="Aura" width="120" />
+</p>
+
 # Aura — Autonomous BSC Trading Agent
 
 **BNB Hack: AI Trading Agent Edition — Track 1 Submission**
 Powered by CoinMarketCap AI Agent Hub × Trust Wallet Agent Kit × BNB Chain
+
+[![Aura Demo](https://img.youtube.com/vi/MNhQzuih-5U/maxresdefault.jpg)](https://www.youtube.com/watch?v=MNhQzuih-5U)
 
 ---
 
