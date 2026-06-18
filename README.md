@@ -7,7 +7,11 @@
 **BNB Hack: AI Trading Agent Edition — Track 1 Submission**
 Powered by CoinMarketCap AI Agent Hub × Trust Wallet Agent Kit × BNB Chain
 
-[![Aura Demo](https://img.youtube.com/vi/MNhQzuih-5U/maxresdefault.jpg)](https://www.youtube.com/watch?v=MNhQzuih-5U)
+<a href="https://www.youtube.com/watch?v=MNhQzuih-5U">
+  <img src="https://img.youtube.com/vi/MNhQzuih-5U/maxresdefault.jpg" alt="Aura Demo" width="600" />
+</a>
+
+▶ **[Watch Demo on YouTube](https://www.youtube.com/watch?v=MNhQzuih-5U)**
 
 ---
 
