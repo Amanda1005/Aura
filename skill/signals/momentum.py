@@ -8,13 +8,25 @@ Z-scores normalize across the token universe so one outlier doesn't dominate.
 import pandas as pd
 
 
-# BEP-20 tokens eligible for the competition (subset with sufficient liquidity)
+# BEP-20 tokens eligible for the competition (full 149-token list)
 ELIGIBLE_SYMBOLS = {
-    "ETH", "USDT", "USDC", "XRP", "DOGE", "ADA", "LINK", "BCH", "DAI",
-    "DOT", "UNI", "AAVE", "ATOM", "FIL", "INJ", "FET", "CAKE", "PENDLE",
-    "AXS", "TWT", "RAY", "COMP", "BAT", "APE", "SNX", "SUSHI", "LTC",
-    "AVAX", "SHIB", "FLOKI", "LDO", "ZRO", "STG", "1INCH", "YFI", "ZIL",
-    "KAVA", "ELF", "ACH", "ROSE",
+    "ETH", "USDT", "USDC", "XRP", "TRX", "DOGE", "ZEC", "ADA", "LINK",
+    "BCH", "DAI", "TON", "USD1", "USDe", "M", "LTC", "AVAX", "SHIB",
+    "XAUt", "WLFI", "H", "DOT", "UNI", "ASTER", "DEXE", "USDD", "ETC",
+    "AAVE", "ATOM", "U", "STABLE", "FIL", "INJ", "FET", "TUSD", "BONK",
+    "PENGU", "CAKE", "SIREN", "LUNC", "ZRO", "KITE", "FDUSD", "BEAT",
+    "PIEVERSE", "BTT", "NFT", "EDGE", "FLOKI", "LDO", "B", "FF", "PENDLE",
+    "NEX", "STG", "AXS", "TWT", "HOME", "RAY", "COMP", "GWEI", "XCN",
+    "GENIUS", "XPL", "BAT", "SKYAI", "APE", "IP", "SFP", "TAG", "NXPC",
+    "AB", "SAHARA", "1INCH", "CHEEMS", "BANANAS31", "RIVER", "MYX", "RAVE",
+    "SNX", "FORM", "LAB", "HTX", "USDf", "CTM", "BDX", "SLX", "UB",
+    "DUCKY", "FRAX", "BILL", "WFI", "KOGE", "ALE", "FRXUSD", "USDF",
+    "GOMINING", "VCNT", "GUA", "DUSD", "SMILEK", "0G", "BEAM", "MY",
+    "SOON", "REAL", "Q", "AIOZ", "ZIG", "YFI", "TAC", "lisUSD", "CYS",
+    "ZAMA", "TRIA", "HUMA", "PLUME", "ZIL", "XPR", "ZETA", "BabyDoge",
+    "NILA", "ROSE", "VELO", "UAI", "BRETT", "OPEN", "BSB", "TOSHI", "BAS",
+    "ACH", "AXL", "LUR", "ELF", "KAVA", "APR", "IRYS", "EURI", "XUSD",
+    "BARD", "DUSK", "SUSHI", "PEAQ", "COAI", "BDCA", "XAUM",
 }
 
 
