@@ -273,7 +273,6 @@ ml/
   predictor.py        Live confidence inference
 backtest/
   backtest.py         29-day backtest (CMC F&G + yfinance)
-demo.sh               One-command demo (signal + agent scan + backtest)
 run_skill.py          Test current signal output
 run_backtest.py       Reproduce backtest results
 ```
