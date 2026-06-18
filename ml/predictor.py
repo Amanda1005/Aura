@@ -9,6 +9,7 @@ Used to adjust position sizing on top of the rule-based regime signal:
 """
 
 import pickle
+import warnings
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -33,8 +34,10 @@ def predict_confidence(features: dict) -> dict:
     if not MODEL_PATH.exists():
         return {"confidence": 0.5, "confidence_multiplier": 0.7, "ml_available": False}
 
-    with open(MODEL_PATH, "rb") as f:
-        model = pickle.load(f)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        with open(MODEL_PATH, "rb") as f:
+            model = pickle.load(f)
 
     row = pd.DataFrame([features])[FEATURE_COLS].values
     proba = float(model.predict_proba(row)[0, 1])
