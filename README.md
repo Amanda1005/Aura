@@ -64,7 +64,7 @@ Every hour:
   └──────────────┬──────────────────────┘
                  │ passes all 5 gates?
   ┌──────────────▼──────────────────────┐
-  │  Groq LLM Review (Llama-3.3-70b)   │
+  │  Groq LLM Review (Llama-3.3-70b)    │
   │  Reviews regime + ML + momentum     │
   │  context, approves or vetoes with   │
   │  chain-of-thought reasoning         │
