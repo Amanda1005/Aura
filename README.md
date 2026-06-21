@@ -271,6 +271,7 @@ The Groq LLM reviewer is a final sanity check — it can veto technically valid 
 ```
 agent.py              Autonomous agent main loop (scan + exit + entry)
 twak_client.py        TWAK CLI wrapper + BSC RPC portfolio fallback
+direct_executor.py    PancakeSwap V2 swap executor (web3.py, fallback when TWAK unavailable)
 llm_reviewer.py       Groq LLM trade review (final gate before execution)
 skill/
   skill.py            CMC Skill — main signal entry point
