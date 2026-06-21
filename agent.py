@@ -132,47 +132,55 @@ def _do_compliance_trade(twak: TWAKClient, signal, portfolio_usd: float):
         log.info("[COMPLIANCE] Skipped — no token candidates")
         return
 
-    symbol = signal.top_long_candidates[0]["symbol"]
-    if symbol in state["positions"]:
-        log.info(f"[COMPLIANCE] Already holding {symbol}, qualification satisfied")
-        state["last_trade_date"] = str(datetime.now(timezone.utc).date())
+    position_usd = portfolio_usd * COMPLIANCE_SIZE_PCT
+
+    for candidate in signal.top_long_candidates:
+        symbol = candidate["symbol"]
+        if symbol in state["positions"]:
+            log.info(f"[COMPLIANCE] Already holding {symbol}, qualification satisfied")
+            state["last_trade_date"] = str(datetime.now(timezone.utc).date())
+            return
+
+        log.info(f"[COMPLIANCE] No trade today — forcing qualification buy: {symbol} ${position_usd:.2f}")
+        try:
+            entry_price = twak.get_price(symbol)
+            result = twak.swap(
+                amount=position_usd,
+                from_token="USDT",
+                to_token=symbol,
+                chain="bsc",
+                slippage=2.0,
+            )
+        except Exception as e:
+            log.warning(f"[COMPLIANCE] Swap failed for {symbol}: {e} — trying next candidate")
+            continue
+
+        today = str(datetime.now(timezone.utc).date())
+        state["last_trade_date"] = today
+
+        if entry_price > 0:
+            state["positions"][symbol] = {
+                "amount_tokens": position_usd / entry_price,
+                "entry_price":   entry_price,
+                "amount_usd":    position_usd,
+                "entry_time":    datetime.now(timezone.utc).isoformat(),
+            }
+
+        state["trades"].append({
+            "time":        datetime.now(timezone.utc).isoformat(),
+            "action":      "BUY",
+            "scan":        state["scan_count"],
+            "symbol":      symbol,
+            "amount_usd":  position_usd,
+            "entry_price": entry_price,
+            "regime":      signal.regime["label"],
+            "compliance":  True,
+            "result":      result,
+        })
+        log.info(f"[COMPLIANCE] Result: {result}")
         return
 
-    position_usd = portfolio_usd * COMPLIANCE_SIZE_PCT
-    log.info(f"[COMPLIANCE] No trade today — forcing qualification buy: {symbol} ${position_usd:.2f}")
-
-    entry_price = twak.get_price(symbol)
-    result = twak.swap(
-        amount=position_usd,
-        from_token="USDT",
-        to_token=symbol,
-        chain="bsc",
-        slippage=1.0,
-    )
-
-    today = str(datetime.now(timezone.utc).date())
-    state["last_trade_date"] = today
-
-    if entry_price > 0:
-        state["positions"][symbol] = {
-            "amount_tokens": position_usd / entry_price,
-            "entry_price":   entry_price,
-            "amount_usd":    position_usd,
-            "entry_time":    datetime.now(timezone.utc).isoformat(),
-        }
-
-    state["trades"].append({
-        "time":        datetime.now(timezone.utc).isoformat(),
-        "action":      "BUY",
-        "scan":        state["scan_count"],
-        "symbol":      symbol,
-        "amount_usd":  position_usd,
-        "entry_price": entry_price,
-        "regime":      signal.regime["label"],
-        "compliance":  True,
-        "result":      result,
-    })
-    log.info(f"[COMPLIANCE] Result: {result}")
+    log.warning("[COMPLIANCE] All candidates failed — no trade executed")
 
 
 def _risk_gate(signal, portfolio_usd: float) -> tuple[bool, str]:
@@ -296,13 +304,18 @@ def run_scan(twak: TWAKClient):
     )
 
     entry_price = twak.get_price(symbol)
-    result = twak.swap(
-        amount=position_usd,
-        from_token="USDT",
-        to_token=symbol,
-        chain="bsc",
-        slippage=1.0,
-    )
+    try:
+        result = twak.swap(
+            amount=position_usd,
+            from_token="USDT",
+            to_token=symbol,
+            chain="bsc",
+            slippage=1.0,
+        )
+    except Exception as e:
+        log.error(f"[BUY] Swap failed for {symbol}: {e} — skipping")
+        _save_state()
+        return
 
     if entry_price > 0:
         state["positions"][symbol] = {
