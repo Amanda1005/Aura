@@ -38,7 +38,9 @@ MAX_HOLD_HOURS =  24     # Force exit after 24 hours
 
 # ── Competition compliance ─────────────────────────────────────────────────────
 COMPLIANCE_HOUR     = 21    # UTC hour — fire compliance trade if no trade yet today
-COMPLIANCE_SIZE_PCT = 0.02  # 2% of portfolio — minimum trade for daily qualification
+COMPLIANCE_SIZE_PCT = 0.10  # 10% of portfolio — above BSC DEX minimum swap amount
+
+STABLECOINS = {"USDT", "USDC", "DAI", "FDUSD", "TUSD", "FRAX", "FRXUSD", "USDD", "USD1", "USDe", "USDf", "XUSD", "DUSD", "USDF", "STABLE", "lisUSD"}
 
 # ── Agent state ────────────────────────────────────────────────────────────────
 state = {
@@ -136,6 +138,8 @@ def _do_compliance_trade(twak: TWAKClient, signal, portfolio_usd: float):
 
     for candidate in signal.top_long_candidates:
         symbol = candidate["symbol"]
+        if symbol in STABLECOINS:
+            continue
         if symbol in state["positions"]:
             log.info(f"[COMPLIANCE] Already holding {symbol}, qualification satisfied")
             state["last_trade_date"] = str(datetime.now(timezone.utc).date())
