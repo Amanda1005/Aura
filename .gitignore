@@ -6,3 +6,4 @@ __pycache__/
 agent_state.json
 .DS_Store
 .claude/
+decrypt_wallet.py
